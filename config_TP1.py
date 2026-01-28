@@ -20,12 +20,15 @@ display_time_stats = True
 
 # initialization : create and place robots at initial positions (returns a list containing the robots)
 
-import robot_braitenberg_avoider
+import robot_braitenberg_hateBot
+import robot_braitenberg_loveWall
 
 def initialize_robots(arena_size=-1, particle_box=-1): # particle_box: size of the robot enclosed in a square
     #x_center = arena_size // 2 - particle_box / 2
     y_center = arena_size // 2 - particle_box / 2
     robots = []
-    robots.append(robot_braitenberg_avoider.Robot_player(4, y_center, 0, name="r1r1r1r1", team="A"))
-    robots.append(robot_braitenberg_avoider.Robot_player(50, y_center, 0, name="r2r2r2r", team="A"))
+    robots.append(robot_braitenberg_hateBot.Robot_player(6, y_center, 0, name="r1", team="A"))
+    robots.append(robot_braitenberg_hateBot.Robot_player(9, y_center, 0, name="r1", team="A"))
+    robots.append(robot_braitenberg_hateBot.Robot_player(35, y_center*2-9, 90, name="r2", team="B"))
     return robots
+
