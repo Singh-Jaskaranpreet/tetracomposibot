@@ -1,8 +1,8 @@
 # Projet "robotique" IA&Jeux 2025
 #
 # Binome:
-#  Prénom Nom No_étudiant/e : _________
-#  Prénom Nom No_étudiant/e : _________
+#  Prénom Nom No_étudiant : Jaskaranpreet SINGH 21239295
+#  Prénom Nom No_étudiant : Guillaume QU 21316059
 #
 # check robot.py for sensor naming convention
 # all sensor and motor value are normalized (from 0.0 to 1.0 for sensors, -1.0 to +1.0 for motors)
@@ -13,7 +13,7 @@ nb_robots = 0
 
 class Robot_player(Robot):
 
-    team_name = "Challenger"  # vous pouvez modifier le nom de votre équipe
+    team_name = "Centurion"  # vous pouvez modifier le nom de votre équipe
     robot_id = -1             # ne pas modifier. Permet de connaitre le numéro de votre robot.
     memory = 0                # vous n'avez le droit qu'a une case mémoire qui doit être obligatoirement un entier
 
