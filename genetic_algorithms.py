@@ -24,6 +24,13 @@ class Robot_player(Robot):
     repeat_count = 0
     score_total = 0.0
 
+    parent_param = []
+    parent_score = None
+    child_param = []
+    child_score = None
+    evaluation_child = False
+
+
     x_0 = 0
     y_0 = 0
     theta_0 = 0 # in [0,360]
@@ -35,7 +42,8 @@ class Robot_player(Robot):
         self.x_0 = x_0
         self.y_0 = y_0
         self.theta_0 = theta_0
-        self.param = [random.randint(-1, 1) for i in range(8)]
+        self.parent_param = [random.randint(-1, 1) for i in range(8)]
+        self.param = self.parent_param.copy()
         self.it_per_evaluation = it_per_evaluation
 
         self.last_log_translation = 0.0
@@ -48,6 +56,14 @@ class Robot_player(Robot):
         super().reset()
         self.last_log_translation = 0.0
         self.last_log_rotation = 0.0
+
+    def mutation(self, param):
+        new_param = param.copy()
+        index = random.randint(0, len(param) - 1)
+        values = [-1, 0, 1]
+        values.remove(new_param[index])
+        new_param[index] = random.choice(values)
+        return new_param
 
     def step(self, sensors, sensor_view=None, sensor_robot=None, sensor_team=None):
 
@@ -92,7 +108,7 @@ class Robot_player(Robot):
                 self.score = 0.0
                 self.iteration = 0
 
-                # evaluations multiples pour un meme comportement (orientation aleatoire)
+                # evaluations multiples pour un meme comportement
                 if self.it_per_evaluation == 400:
                     self.repeat_count = self.repeat_count + 1
                     if self.repeat_count < self.repeats_per_eval:
@@ -104,13 +120,34 @@ class Robot_player(Robot):
                     print(" ")
                     print ("Score total (trial", self.trial, "):", self.score_total)
                     print ("-----------------------------------------------")
+                    
 
-                    if self.score_total > self.best_score:
-                        self.best_score = self.score_total
-                        self.bestParam = self.param.copy()
+                    #si 1ere evaluation du parent apres 1ere 400 itérations
+                    if self.parent_score is None:
+                        # premiere evaluation: parent
+                        self.parent_score = self.score_total
+                        self.best_score = self.parent_score
+                        self.bestParam = self.parent_param.copy()
                         self.best_trial = self.trial
-                        print ("New best score :", self.best_score, "(trial", self.best_trial, ")")
-                        print ("parameters :", self.bestParam)
+                    else:
+                        if self.evaluation_child:
+                            # fin evaluation enfant -> comparaison
+                            self.child_score = self.score_total
+                            if self.child_score > self.parent_score:
+                                self.parent_param = self.child_param.copy()
+                                self.parent_score = self.child_score
+                                print("Enfant meilleur devient parent")
+                            else:
+                                print("Parent reste le meme")
+                            self.evaluation_child = False
+
+                        # mise a jour du meilleur global sur le parent
+                        if self.parent_score > self.best_score:
+                            self.best_score = self.parent_score
+                            self.bestParam = self.parent_param.copy()
+                            self.best_trial = self.trial
+                            print ("New best score :", self.best_score, "(trial", self.best_trial, ")")
+                            print ("parameters :", self.bestParam)
 
                     self.score_total = 0.0
                     self.repeat_count = 0
@@ -129,13 +166,15 @@ class Robot_player(Robot):
                     self.trial = self.max_trials + 1
                     return 0, 0, True 
                 
-                #pour chauque essai on génère des nouveaux paramètres
+                # generation suivante on a un enfant mute du parent
                 if self.it_per_evaluation == 400:
-                    self.param = [random.randint(-1, 1) for i in range(8)]
+                    self.child_param = self.mutation(self.parent_param)
+                    self.param = self.child_param.copy()
+                    self.evaluation_child = True
                     self.trial = self.trial + 1
                     print ("-----------------------------------------------")
-                    print ("Trying strategy no.",self.trial)
-                    return 0, 0, True 
+                    print ("Generation", self.trial, "-> evaluation enfant")
+                    return 0, 0, True
 
         # fonction de contrôle (qui dépend des entrées sensorielles, et des paramètres)
         translation = math.tanh ( self.param[0] + self.param[1] * sensors[sensor_front_left] + self.param[2] * sensors[sensor_front] + self.param[3] * sensors[sensor_front_right] )
