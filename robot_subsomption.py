@@ -4,6 +4,25 @@ from robot import *
 nb_robots = 0
 debug = True
 
+def behavior_toutDroit():
+    return 0.4, 0.0
+
+def behavior_hateWall(sensor_to_wall):
+    translation = sensor_to_wall[sensor_front] * 0.4
+    rotation = (
+        -(1 - sensor_to_wall[sensor_left]) * 0.15
+        - (1 - sensor_to_wall[sensor_front_left]) * 0.2
+        + (1 - sensor_to_wall[sensor_front_right]) * 0.2
+        + (1 - sensor_to_wall[sensor_right]) * 0.15
+        + (random.random() - 0.5) * 0.2
+    )
+    return translation, rotation
+
+def behavior_LoveBot(sensors, sensor_to_robot):
+    translation = sensors[sensor_front] * 0.4
+    rotation = (1 - sensor_to_robot[sensor_front_left]) - (1 - sensor_to_robot[sensor_front_right])
+    return translation, rotation
+
 class Robot_player(Robot):
 
     team_name = "subsomption"
@@ -41,8 +60,23 @@ class Robot_player(Robot):
                 print ("\trobot's name (if relevant)      =",sensor_robot)
                 print ("\trobot's team (if relevant)      =",sensor_team)
 
-        translation = sensors[sensor_front]*0.5 # A MODIFIER
-        rotation = 0.5 # A MODIFIER
+        # --- subsomption (priorites) ---
+        wall_is_close = min(
+            sensor_to_wall[sensor_front],
+            sensor_to_wall[sensor_front_left],
+            sensor_to_wall[sensor_front_right],
+            sensor_to_wall[sensor_left],
+            sensor_to_wall[sensor_right],
+        ) < 0.6 # on a chosi 0.6 pour detecter les murs un peu plus tot
+
+        robot_seen = min(sensor_to_robot) < 1.0 
+
+        if wall_is_close:
+            translation, rotation = behavior_hateWall(sensor_to_wall)
+        elif robot_seen:
+            translation, rotation = behavior_LoveBot(sensors, sensor_to_robot)
+        else:
+            translation, rotation = behavior_toutDroit()
 
         self.iteration = self.iteration + 1        
         return translation, rotation, False
