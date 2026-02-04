@@ -5,6 +5,7 @@ import random
 
 nb_robots = 0
 debug = False
+cpt_exo4 = 0
 
 class Robot_player(Robot):
 
@@ -60,9 +61,11 @@ class Robot_player(Robot):
         if self.iteration > 0:
             delta_translation = self.log_sum_of_translation - self.last_log_translation
             delta_rotation = self.log_sum_of_rotation - self.last_log_rotation
-            self.score += delta_translation * (1 - abs(delta_rotation))
+            distance_from_origin = math.sqrt((self.x-self.x_0)**2+(self.y-self.y_0)**2)
+            self.score += delta_translation * (1 - abs(delta_rotation))*(1 + 0.1*distance_from_origin)
             self.last_log_translation = self.log_sum_of_translation
             self.last_log_rotation = self.log_sum_of_rotation
+    
 
         # toutes les X itérations: le robot est remis à sa position initiale de l'arène avec une orientation aléatoire
         if self.iteration > 0 and self.iteration % self.it_per_evaluation == 0:
@@ -71,9 +74,11 @@ class Robot_player(Robot):
 
                     print ("\tparameters           =",self.param)
                     print ("\ttranslations         =",self.log_sum_of_translation,"; rotations =",self.log_sum_of_rotation) # *effective* translation/rotation (ie. measured from displacement)
-                    print ("\tdistance from origin =",math.sqrt((self.x-self.x_0)**2+(self.y-self.y_0)**2))
+                    print ("\tdistance from origin =",distance_from_origin)
                     print ("Score for trial", self.trial, "eval", self.repeat_count + 1, ":", self.score)
                     print(" ")
+
+
             
 
                     self.score_total += self.score
@@ -100,6 +105,7 @@ class Robot_player(Robot):
                                self.repeats_per_eval, ")")
                         return 0, 0, True 
 
+                    self.score_total=self.score_total*(1.0)/3 # on fais la moyenne de 3 eval
                     # fin des 3 evaluations
                     print(" ")
                     print ("Score total (trial", self.trial, "):", self.score_total)

@@ -41,7 +41,7 @@ class Robot_player(Robot):
                 print ("\trobot's name (if relevant)      =",sensor_robot)
                 print ("\trobot's team (if relevant)      =",sensor_team)
 
-        translation = 0.2 # A MODIFIER
-        rotation = (1-sensor_to_robot[sensor_front_right])+ (1-sensor_to_robot[sensor_right]) + (-1*(1-sensor_to_robot[sensor_front_left])) + (-1*(1-sensor_to_robot[sensor_left])) + (random.uniform(-0.1,0.1)*(1-(sensor_to_robot[sensor_front])))
+        translation = 0.2 + sensor_to_robot[sensor_front]*0.2 # A MODIFIER
+        rotation = (1-sensor_to_robot[sensor_front_right]) + (1-sensor_to_robot[sensor_right]) - (1-sensor_to_robot[sensor_front_left]) + (-1*(1-sensor_to_robot[sensor_left])) + (1-(sensor_to_robot[sensor_front]))
         self.iteration = self.iteration + 1        
         return translation, rotation, False

@@ -55,7 +55,8 @@ class Robot_player(Robot):
         if self.iteration > 0:
             delta_translation = self.log_sum_of_translation - self.last_log_translation
             delta_rotation = self.log_sum_of_rotation - self.last_log_rotation
-            self.score += delta_translation * (1 - abs(delta_rotation))
+            distance_from_origin = math.sqrt((self.x-self.x_0)**2+(self.y-self.y_0)**2)
+            self.score += delta_translation * (1 - abs(delta_rotation))*(1 + 0.1*distance_from_origin)
             self.last_log_translation = self.log_sum_of_translation
             self.last_log_rotation = self.log_sum_of_rotation
 
@@ -65,7 +66,7 @@ class Robot_player(Robot):
                 if self.it_per_evaluation == 400:
                     print ("\tparameters           =",self.param)
                     print ("\ttranslations         =",self.log_sum_of_translation,"; rotations =",self.log_sum_of_rotation) # *effective* translation/rotation (ie. measured from displacement)
-                    print ("\tdistance from origin =",math.sqrt((self.x-self.x_0)**2+(self.y-self.y_0)**2))
+                    print ("\tdistance from origin =",distance_from_origin)
                     print ("Score for trial", self.trial, ":", self.score)
                     if self.score > self.best_score:
                         self.best_score = self.score

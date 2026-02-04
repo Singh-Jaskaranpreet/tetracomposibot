@@ -117,6 +117,7 @@ class Robot_player(Robot):
                                self.repeats_per_eval, ")")
                         return 0, 0, True 
 
+                    self.score_total = self.score_total*(1.0)/3 # on fais la moyenne de 3 eval 
                     # fin des 3 evaluations
                     print(" ")
                     print ("Score total (trial", self.trial, "):", self.score_total)
