@@ -76,7 +76,8 @@ class Robot_player(Robot):
         if self.iteration > 0:
             delta_translation = self.log_sum_of_translation - self.last_log_translation
             delta_rotation = self.log_sum_of_rotation - self.last_log_rotation
-            self.score += delta_translation * (1 - abs(delta_rotation))
+            distance_from_origin = math.sqrt((self.x-self.x_0)**2+(self.y-self.y_0)**2)
+            self.score += delta_translation * (1 - abs(delta_rotation))*0.8
             self.last_log_translation = self.log_sum_of_translation
             self.last_log_rotation = self.log_sum_of_rotation
 
@@ -87,7 +88,7 @@ class Robot_player(Robot):
 
                     print ("\tparameters           =",self.param)
                     print ("\ttranslations         =",self.log_sum_of_translation,"; rotations =",self.log_sum_of_rotation) # *effective* translation/rotation (ie. measured from displacement)
-                    print ("\tdistance from origin =",math.sqrt((self.x-self.x_0)**2+(self.y-self.y_0)**2))
+                    print ("\tdistance from origin =",distance_from_origin)
                     print ("Score for trial", self.trial, "eval", self.repeat_count + 1, ":", self.score)
                     print(" ")
             
