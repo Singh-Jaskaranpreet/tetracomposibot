@@ -26,7 +26,7 @@ class Robot_player(Robot):
     def step(self, sensors, sensor_view=None, sensor_robot=None, sensor_team=None):
         if self.robot_id == 1 :
             
-            translation = sensors[sensor_front]*0.1+0.2
+            translation = sensors[sensor_front]*0.15+0.2
             rotation = 0.2 * sensors[sensor_left] + 0.2 * sensors[sensor_front_left] - 0.2 * sensors[sensor_right] - 0.2 * sensors[sensor_front_right] + (random.random()-0.5)*1
             """
             if self.memory == 0 :
