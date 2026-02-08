@@ -8,7 +8,7 @@
 # all sensor and motor value are normalized (from 0.0 to 1.0 for sensors, -1.0 to +1.0 for motors)
 
 from robot import * 
-from math import tanh
+
 nb_robots = 0
 
 class Robot_player(Robot):
@@ -24,51 +24,42 @@ class Robot_player(Robot):
         super().__init__(x_0, y_0, theta_0, name="Robot "+str(self.robot_id), team=self.team_name)
 
     def step(self, sensors, sensor_view=None, sensor_robot=None, sensor_team=None):
+
+        #robot explorateur
         if self.robot_id == 1 :
             
-            translation = sensors[sensor_front]*0.15+0.2
-            rotation = 0.2 * sensors[sensor_left] + 0.2 * sensors[sensor_front_left] - 0.2 * sensors[sensor_right] - 0.2 * sensors[sensor_front_right] + (random.random()-0.5)*1
-            """
-            if self.memory == 0 :
-                self.memory = random.choice([-1, 1])
+            front_space = min(sensors[sensor_front],sensors[sensor_front_left],sensors[sensor_front_right])
+            translation = front_space*0.4+0.5 # ON  CONTINUE MEME SI ON A BLOQUE DEVANT, ON ESSAIE DE SE FAUFILER
 
-            if sensors[sensor_left] < 0.1 and sensors[sensor_right] < 0.1 :
-                if sensors[sensor_front] < 0.2 :
-                    translation = 0
-                    rotation = self.memory
-                else :
-                    rotation = 0
-                    translation = 0.2
 
-            elif sensors[sensor_left] < 0.2 or sensors[sensor_right] < 0.2 :
-                translation = 0.1
-                rotation =  self.memory * 0.5
+            danger_left  = (1 - sensors[sensor_left]) + (1 - sensors[sensor_front_left])
+            danger_right = (1 - sensors[sensor_right]) + (1 - sensors[sensor_front_right])
 
-            elif sensors[sensor_left] > 0.7 or sensors[sensor_right] > 0.7 :
-                if sensors[sensor_front] == 1 :
-                    translation = 0.75
-                    rotation = 0
-                else :
-                    translation = 0
-                    rotation = self.memory * 0.66
+            rotation = (danger_right - danger_left) * 0.3
+            rotation += (random.random() - 0.5) * 0.1
 
-            elif sensors[sensor_front] < 1 :
-                translation = 0
-                rotation = self.memory
-
-            elif sensors[sensor_front_left] < 1 or sensors[sensor_front_right] < 1 :
-                translation = 0
-                rotation = self.memory
-
-            else :
-                translation = 0.75
-                rotation = (random.random() - 0.5) * 0.1
-            """
-            
+        
 
         elif self.robot_id == 0 :
-            translation = sensors[sensor_front]*0.4
-            rotation = -(1-sensors[sensor_left])*0.2-(1-sensors[sensor_front_left])*0.25+(1-sensors[sensor_front_right])*0.25+(1-sensors[sensor_right])*0.2
+
+            front_space = min(sensors[sensor_front],sensors[sensor_front_left],sensors[sensor_front_right])
+            translation = front_space*0.4
+
+
+            danger_left  = (1 - sensors[sensor_left]) + (1 - sensors[sensor_front_left])
+            danger_right = (1 - sensors[sensor_right]) + (1 - sensors[sensor_front_right])
+
+            rotation = (danger_right - danger_left) * 0.3
+            
+             #ON utiliser la mémoire SI ON A CONINSE DANS GAUCHE ,DROTE 
+            if abs(rotation) > 0.1:
+                if rotation > 0:
+                    self.memory = 1      # il memeorise que il avait troue  gauche donc si il est concine prochant fois il continuer a tourner a gauche
+                else:
+                    self.memory = -1     # pareil pour droite
+            else:
+                # hésitation donc il continue pareil comme la dernier fois 
+                rotation = self.memory * 0.2
 
         elif self.robot_id == 2 :
             """
@@ -93,15 +84,15 @@ class Robot_player(Robot):
                 rotation = (random.random() - 0.5) * 0.01
                 self.memory = self.log_sum_of_translation
                 
-            """
+
             print("front =", sensors[sensor_front],")  left = ",sensors[sensor_left], " right = ", sensors[sensor_right], "f left = ", sensors[sensor_front_left], "f rightt = ", sensors[sensor_front_right])
             print("rotation = ", rotation, " translation", translation, "\n")
             print(self.x,"    ",self.y)
             print("sum tran", self.log_sum_of_translation, " mem =",self.memory)
-            """
+
         elif self.robot_id == 3 :
-            translation = tanh ( 1 +  0 * sensors[sensor_front_left] + 1 * sensors[sensor_front] + 1 * sensors[sensor_front_right] )
-            rotation = tanh ( -1 - 1 * sensors[sensor_front_left] + 1 * sensors[sensor_front] + 0 * sensors[sensor_front_right] )
+            translation = sensors[sensor_front]*0.5 # A MODIFIER
+            rotation = 0.5 # A MODIFIER
 
        
 
