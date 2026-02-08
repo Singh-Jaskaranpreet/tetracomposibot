@@ -15,7 +15,7 @@ class Robot_player(Robot):
 
     team_name = "Centurion"  # vous pouvez modifier le nom de votre équipe
     robot_id = -1             # ne pas modifier. Permet de connaitre le numéro de votre robot.
-    memory = random.choice([-1,1])         # vous n'avez le droit qu'a une case mémoire qui doit être obligatoirement un entier
+    memory = 0        # vous n'avez le droit qu'a une case mémoire qui doit être obligatoirement un entier
 
     def __init__(self, x_0, y_0, theta_0, name="n/a", team="n/a"):
         global nb_robots
@@ -25,8 +25,12 @@ class Robot_player(Robot):
 
     def step(self, sensors, sensor_view=None, sensor_robot=None, sensor_team=None):
         if self.robot_id == 1 :
+            if self.memory == 0 :
+                self.memory = random.choice([-1, 1])
+
             if sensors[sensor_left] < 0.1 and sensors[sensor_right] < 0.1 :
                 if sensors[sensor_front] < 0.2 :
+                    translation = 0
                     rotation = self.memory
                 else :
                     rotation = 0
@@ -64,24 +68,27 @@ class Robot_player(Robot):
 
         elif self.robot_id == 2 :
             if sensors[sensor_front] < 0.15 :
-                if self.memory == 0 :
+                if self.memory != -1 and self.memory != 1 :
                     self.memory = random.choice([-1, 1])
                 translation = 0
                 rotation = self.memory
 
-            elif self.log_sum_of_translation == 0 :
-                if self.memory == 0 :
+            elif ((self.memory == 1 or self.memory == -1 ) or self.log_sum_of_translation !=0) and self.log_sum_of_translation == self.memory:
+                if self.memory != -1 and self.memory != 1 :
                     self.memory = random.choice([-1, 1])
                 translation = 0
                 rotation = self.memory
 
             else :
                 translation = 1
-                rotation = 0
-                self.memory = 0
+                rotation = (random.random() - 0.5) * 0.01
+                self.memory = self.log_sum_of_translation
+                
+
             print("front =", sensors[sensor_front],")  left = ",sensors[sensor_left], " right = ", sensors[sensor_right], "f left = ", sensors[sensor_front_left], "f rightt = ", sensors[sensor_front_right])
             print("rotation = ", rotation, " translation", translation, "\n")
-            print("sum trans = ", self.log_sum_of_translation, "  sum rota = ", self.log_sum_of_rotation)
+            print(self.x,"    ",self.y)
+            print("sum tran", self.log_sum_of_translation, " mem =",self.memory)
         elif self.robot_id == 3 :
             translation = sensors[sensor_front]*0.5 # A MODIFIER
             rotation = 0.5 # A MODIFIER
