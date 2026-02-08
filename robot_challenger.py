@@ -7,6 +7,7 @@
 # check robot.py for sensor naming convention
 # all sensor and motor value are normalized (from 0.0 to 1.0 for sensors, -1.0 to +1.0 for motors)
 
+import math
 from robot import * 
 
 nb_robots = 0
@@ -16,6 +17,8 @@ class Robot_player(Robot):
     team_name = "Centurion"  # vous pouvez modifier le nom de votre équipe
     robot_id = -1             # ne pas modifier. Permet de connaitre le numéro de votre robot.
     memory = 0        # vous n'avez le droit qu'a une case mémoire qui doit être obligatoirement un entier
+    Best_PARAM = [1, -1, 0, 1, 1, 0, 0, -1] # variable globale pour stocker les meilleurs Best_PARAMètres trouvés par l'algorithme génétique, à utiliser pour le robot 3
+
 
     def __init__(self, x_0, y_0, theta_0, name="n/a", team="n/a"):
         global nb_robots
@@ -25,7 +28,12 @@ class Robot_player(Robot):
 
     def step(self, sensors, sensor_view=None, sensor_robot=None, sensor_team=None):
 
-        #robot explorateur
+        # Robot 1 : robot explorateur
+        # Il avance presque en permanence pour couvrir un maximum de terrain,
+        # ajuste légèrement sa vitesse selon l’espace devant,
+        # évite les murs grâce à la rotation,
+        # et utilise un peu d’aléatoire pour ne pas tourner en rond.
+
         if self.robot_id == 1 :
             
             front_space = min(sensors[sensor_front],sensors[sensor_front_left],sensors[sensor_front_right])
@@ -39,6 +47,11 @@ class Robot_player(Robot):
             rotation += (random.random() - 0.5) * 0.1
 
         
+        # Robot 0 : robot d’évitement stable
+        # Il avance quand l’espace devant est libre,
+        # évite les murs en comparant le danger à gauche et à droite,
+        # et utilise sa mémoire pour garder la même direction
+        # quand la situation est ambiguë (évite le zigzag).
 
         elif self.robot_id == 0 :
 
@@ -61,6 +74,8 @@ class Robot_player(Robot):
                 # hésitation donc il continue pareil comme la dernier fois 
                 rotation = self.memory * 0.2
 
+
+        
         elif self.robot_id == 2 :
             """
             translation = sensors[sensor_front]*0.1+0.2
@@ -84,17 +99,29 @@ class Robot_player(Robot):
                 rotation = (random.random() - 0.5) * 0.01
                 self.memory = self.log_sum_of_translation
                 
-            '''
+
             print("front =", sensors[sensor_front],")  left = ",sensors[sensor_left], " right = ", sensors[sensor_right], "f left = ", sensors[sensor_front_left], "f rightt = ", sensors[sensor_front_right])
             print("rotation = ", rotation, " translation", translation, "\n")
             print(self.x,"    ",self.y)
             print("sum tran", self.log_sum_of_translation, " mem =",self.memory)
-            '''
-        elif self.robot_id == 3 :
-            translation = sensors[sensor_front]*0.5 # A MODIFIER
-            rotation = 0.5 # A MODIFIER
 
-       
+
+        # Robot 3 : robot optimisé par algorithme génétique
+        # Ce robot utilise un comportement de type Braitenberg (capteurs → moteurs).
+        # Les coefficients de translation et de rotation ont été optimisés
+        # hors ligne à l’aide d’un algorithme génétique.
+        # Pendant l’exécution du match, les paramètres sont fixes :
+        # le robot applique directement la fonction de contrôle apprise
+
+
+        elif self.robot_id == 3:
+
+        # fonction de contrôle (qui dépend des entrées sensorielles, et des Best_PARAMètres)
+            translation = math.tanh ( self.Best_PARAM[0] + self.Best_PARAM[1] * sensors[sensor_front_left] + self.Best_PARAM[2] * sensors[sensor_front] + self.Best_PARAM[3] * sensors[sensor_front_right] )
+            rotation = math.tanh ( self.Best_PARAM[4] + self.Best_PARAM[5] * sensors[sensor_front_left] + self.Best_PARAM[6] * sensors[sensor_front] + self.Best_PARAM[7] * sensors[sensor_front_right] )
+
+
+        
 
         return translation, rotation, False
 
