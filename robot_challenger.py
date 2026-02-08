@@ -93,11 +93,12 @@ class Robot_player(Robot):
                 rotation = (random.random() - 0.5) * 0.01
                 self.memory = self.log_sum_of_translation
                 
-
+            """
             print("front =", sensors[sensor_front],")  left = ",sensors[sensor_left], " right = ", sensors[sensor_right], "f left = ", sensors[sensor_front_left], "f rightt = ", sensors[sensor_front_right])
             print("rotation = ", rotation, " translation", translation, "\n")
             print(self.x,"    ",self.y)
             print("sum tran", self.log_sum_of_translation, " mem =",self.memory)
+            """
         elif self.robot_id == 3 :
             translation = tanh ( 1 +  0 * sensors[sensor_front_left] + 1 * sensors[sensor_front] + 1 * sensors[sensor_front_right] )
             rotation = tanh ( -1 - 1 * sensors[sensor_front_left] + 1 * sensors[sensor_front] + 0 * sensors[sensor_front_right] )
