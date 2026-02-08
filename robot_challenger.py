@@ -8,7 +8,7 @@
 # all sensor and motor value are normalized (from 0.0 to 1.0 for sensors, -1.0 to +1.0 for motors)
 
 from robot import * 
-
+from math import tanh
 nb_robots = 0
 
 class Robot_player(Robot):
@@ -99,8 +99,8 @@ class Robot_player(Robot):
             print(self.x,"    ",self.y)
             print("sum tran", self.log_sum_of_translation, " mem =",self.memory)
         elif self.robot_id == 3 :
-            translation = sensors[sensor_front]*0.5 # A MODIFIER
-            rotation = 0.5 # A MODIFIER
+            translation = tanh ( 1 +  0 * sensors[sensor_front_left] + 1 * sensors[sensor_front] + 1 * sensors[sensor_front_right] )
+            rotation = tanh ( -1 - 1 * sensors[sensor_front_left] + 1 * sensors[sensor_front] + 0 * sensors[sensor_front_right] )
 
        
 
