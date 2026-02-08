@@ -25,6 +25,10 @@ class Robot_player(Robot):
 
     def step(self, sensors, sensor_view=None, sensor_robot=None, sensor_team=None):
         if self.robot_id == 1 :
+            
+            translation = sensors[sensor_front]*0.1+0.2
+            rotation = 0.2 * sensors[sensor_left] + 0.2 * sensors[sensor_front_left] - 0.2 * sensors[sensor_right] - 0.2 * sensors[sensor_front_right] + (random.random()-0.5)*1
+            """
             if self.memory == 0 :
                 self.memory = random.choice([-1, 1])
 
@@ -49,17 +53,17 @@ class Robot_player(Robot):
                     rotation = self.memory * 0.66
 
             elif sensors[sensor_front] < 1 :
-                translation = -0.001
+                translation = 0
                 rotation = self.memory
 
             elif sensors[sensor_front_left] < 1 or sensors[sensor_front_right] < 1 :
-                translation = -0.001
+                translation = 0
                 rotation = self.memory
 
             else :
                 translation = 0.75
                 rotation = (random.random() - 0.5) * 0.1
-            
+            """
             
 
         elif self.robot_id == 0 :
@@ -67,6 +71,11 @@ class Robot_player(Robot):
             rotation = -(1-sensors[sensor_left])*0.2-(1-sensors[sensor_front_left])*0.25+(1-sensors[sensor_front_right])*0.25+(1-sensors[sensor_right])*0.2
 
         elif self.robot_id == 2 :
+            """
+            translation = sensors[sensor_front]*0.1+0.2
+            rotation = 0.2 * sensors[sensor_left] + 0.2 * sensors[sensor_front_left] - 0.2 * sensors[sensor_right] - 0.2 * sensors[sensor_front_right] + (random.random()-0.5)*1
+            
+            """
             if sensors[sensor_front] < 0.15 :
                 if self.memory != -1 and self.memory != 1 :
                     self.memory = random.choice([-1, 1])
