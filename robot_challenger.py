@@ -85,26 +85,41 @@ class Robot_player(Robot):
             if sensors[sensor_front] < 0.15 :
                 if self.memory != -1 and self.memory != 1 :
                     self.memory = random.choice([-1, 1])
-                translation = 0
+                translation = 0.1
                 rotation = self.memory
 
-            elif ((self.memory == 1 or self.memory == -1 ) or self.log_sum_of_translation !=0) and self.log_sum_of_translation == self.memory:
-                if self.memory != -1 and self.memory != 1 :
-                    self.memory = random.choice([-1, 1])
-                translation = 0
+            elif int(self.log_sum_of_translation) == self.memory :
+                if int(self.log_sum_of_translation) == 0 :
+                    translation = 1
+                    rotation = (random.random() - 0.5) * 0.01
+                else :
+                    if sensors[sensor_front] > 0.8  and sensors[sensor_front_left] > 0.3 and sensors[sensor_front_right] > 0.3 and sensors[sensor_left] > 0.15 and sensors[sensor_right] > 0.15:
+                        translation = 1 
+                        rotation = (random.random() - 0.5) * 0.01
+                    else :
+                        self.memory = random.choice([-1, 1])
+                        translation = 0.1
+                        rotation = self.memory
+
+            elif sensors[sensor_front] > 0.8:
+                translation = 1
+                rotation = (random.random() - 0.5) * 0.01
+                self.memory = int(self.log_sum_of_translation)
+
+            elif (self.memory == 1 or self.memory == -1 ):  
+                translation = 0.1
                 rotation = self.memory
 
             else :
                 translation = 1
                 rotation = (random.random() - 0.5) * 0.01
-                self.memory = self.log_sum_of_translation
-                
-
+                self.memory = int(self.log_sum_of_translation)
+            
             print("front =", sensors[sensor_front],")  left = ",sensors[sensor_left], " right = ", sensors[sensor_right], "f left = ", sensors[sensor_front_left], "f rightt = ", sensors[sensor_front_right])
             print("rotation = ", rotation, " translation", translation, "\n")
             print(self.x,"    ",self.y)
-            print("sum tran", self.log_sum_of_translation, " mem =",self.memory)
-
+            print("sum tran", int(self.log_sum_of_translation), " mem =",self.memory)
+            
 
         # Robot 3 : robot optimisé par algorithme génétique
         # Ce robot utilise un comportement de type Braitenberg (capteurs → moteurs).
