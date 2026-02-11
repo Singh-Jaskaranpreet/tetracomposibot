@@ -80,45 +80,45 @@ class Robot_player(Robot):
 
 
         # Robot 2 : architecture de subsomption (exemple de comportement à plusieurs couches)
-        # Couche 1 (urgence) : si obstacle très proche, on tourne sur place
-        # Couche 2 (cohérence) : garder une direction stable via memory
-        # Couche 3 (exploration) : avancer vite quand c’est libre
+        # Couche 1 (Sur place) : garder une direction stable via memory
+        # Couche 2 (Exploration) : avancer vite quand c’est libre
         elif self.robot_id == 2 :
 
-            # Couche 1: évitement urgent
-            if sensors[sensor_front] < 0.15:
-                if self.memory not in (-1, 1):
-                    self.memory = random.choice([-1, 1])
-                translation = 0.1
-                rotation = self.memory
-
-            # Couche 2: cohérence directionnelle si on hésite
-            elif int(self.log_sum_of_translation) == self.memory:
+            # Couche 1: cohérence directionnelle si on hésite
+            if int(self.log_sum_of_translation) == self.memory:
                 if int(self.log_sum_of_translation) == 0:
                     translation = 1
-                    rotation = (random.random() - 0.5) * 0.01
+                    rotation = 0
+                elif sensors[sensor_left] < 0.15 :
+                    self.memory = -1 
+                    translation = -0.05
+                    rotation = self.memory
+                elif sensors[sensor_right] < 0.15 :
+                    self.memory = 1
+                    translation = -0.05
+                    rotation = self.memory
                 else:
                     if sensors[sensor_front] > 0.8 and sensors[sensor_front_left] > 0.3 and sensors[sensor_front_right] > 0.3 and sensors[sensor_left] > 0.15 and sensors[sensor_right] > 0.15:
                         translation = 1
-                        rotation = (random.random() - 0.5) * 0.01
+                        rotation = (random.random() - 0.5) * 0.1
                     else:
                         self.memory = random.choice([-1, 1])
-                        translation = 0.1
+                        translation = -0.05
                         rotation = self.memory
 
-            # Couche 3: exploration libre
+            # Couche 2: exploration libre
             elif sensors[sensor_front] > 0.8:
                 translation = 1
-                rotation = (random.random() - 0.5) * 0.01
+                rotation =0
                 self.memory = int(self.log_sum_of_translation)
 
             elif self.memory in (-1, 1):
-                translation = 0.1
+                translation = -0.05
                 rotation = self.memory
 
             else:
                 translation = 1
-                rotation = (random.random() - 0.5) * 0.01
+                rotation = 0
                 self.memory = int(self.log_sum_of_translation)
             
 
